@@ -12,6 +12,8 @@ bin/
 
 # Environment secrets
 .env
+.env.test
+.env.dev
 .env.*
 
 # Tooling/IDE
