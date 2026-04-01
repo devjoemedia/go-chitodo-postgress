@@ -12,6 +12,17 @@ definitions:
         description: always "Bearer"
         type: string
     type: object
+  api_response.CreateTicketResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+      ticket:
+        $ref: '#/definitions/models.Ticket'
+    type: object
   api_response.CreateTodoResponse:
     properties:
       message:
@@ -22,6 +33,15 @@ definitions:
         type: boolean
       todo:
         $ref: '#/definitions/models.Todo'
+    type: object
+  api_response.DeleteTicketResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
     type: object
   api_response.DeleteTodoResponse:
     properties:
@@ -40,6 +60,32 @@ definitions:
         type: integer
       success:
         type: boolean
+    type: object
+  api_response.GetTicketResponse:
+    properties:
+      message:
+        type: string
+      status:
+        type: integer
+      success:
+        type: boolean
+      ticket:
+        $ref: '#/definitions/models.Ticket'
+    type: object
+  api_response.GetTicketsResponse:
+    properties:
+      message:
+        type: string
+      pagination:
+        $ref: '#/definitions/types.Pagination'
+      status:
+        type: integer
+      success:
+        type: boolean
+      tickets:
+        items:
+          $ref: '#/definitions/models.Ticket'
+        type: array
     type: object
   api_response.GetTodoResponse:
     properties:
@@ -154,12 +200,40 @@ definitions:
     properties:
       message:
         type: string
+      pagination:
+        $ref: '#/definitions/types.Pagination'
       status:
         type: integer
       success:
         type: boolean
       user:
         $ref: '#/definitions/models.User'
+    type: object
+  models.CreateTicketRequest:
+    properties:
+      assignee_id:
+        type: integer
+      description:
+        maxLength: 1000
+        type: string
+      priority:
+        enum:
+        - low
+        - medium
+        - high
+        type: string
+      status:
+        enum:
+        - open
+        - in_progress
+        - closed
+        type: string
+      title:
+        maxLength: 255
+        minLength: 1
+        type: string
+    required:
+    - title
     type: object
   models.LoginRequest:
     properties:
@@ -193,6 +267,44 @@ definitions:
     - email
     - name
     - password
+    type: object
+  models.Ticket:
+    properties:
+      assignee:
+        $ref: '#/definitions/models.User'
+      assignee_id:
+        type: integer
+      created_at:
+        type: string
+      description:
+        maxLength: 1000
+        type: string
+      id:
+        type: integer
+      priority:
+        enum:
+        - low
+        - medium
+        - high
+        type: string
+      reporter:
+        $ref: '#/definitions/models.User'
+      reporter_id:
+        type: integer
+      status:
+        enum:
+        - open
+        - in_progress
+        - closed
+        type: string
+      title:
+        maxLength: 255
+        minLength: 5
+        type: string
+      updated_at:
+        type: string
+    required:
+    - title
     type: object
   models.Todo:
     properties:
@@ -229,16 +341,18 @@ definitions:
         maxLength: 255
         minLength: 1
         type: string
-    required:
-    - name
     type: object
   models.User:
     properties:
+      created_at:
+        type: string
       email:
         type: string
       id:
         type: integer
       name:
+        type: string
+      updated_at:
         type: string
     type: object
   types.Pagination:
@@ -342,6 +456,131 @@ paths:
       summary: Register a new user
       tags:
       - auth
+  /api/v1/tickets:
+    get:
+      description: Retrieve tickets with optional pagination (page, size) and filter
+        by status, priority, assignee_id, reporter_id
+      parameters:
+      - description: 'Page number (default: 1)'
+        in: query
+        name: page
+        type: integer
+      - description: 'Page size (default: 10, max: 100)'
+        in: query
+        name: size
+        type: integer
+      - description: Filter by status
+        in: query
+        name: status
+        type: string
+      - description: Filter by priority
+        in: query
+        name: priority
+        type: string
+      - description: Filter by assignee_id
+        in: query
+        name: assignee_id
+        type: integer
+      - description: Filter by reporter_id
+        in: query
+        name: reporter_id
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_response.GetTicketsResponse'
+      security:
+      - BearerAuth: []
+      summary: Get tickets with pagination and filters
+      tags:
+      - tickets
+    post:
+      consumes:
+      - application/json
+      description: Create a new ticket item
+      parameters:
+      - description: Ticket object
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateTicketRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_response.CreateTicketResponse'
+        "400":
+          description: Invalid JSON
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Create a new ticket
+      tags:
+      - tickets
+  /api/v1/tickets/{id}:
+    delete:
+      description: Delete a specific ticket by its ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_response.DeleteTicketResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Ticket not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Delete ticket by ID
+      tags:
+      - tickets
+    get:
+      description: Fetch a specific ticket by its ID
+      parameters:
+      - description: Ticket ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/api_response.GetTicketResponse'
+        "400":
+          description: Invalid ID
+          schema:
+            type: string
+        "404":
+          description: Ticket not found
+          schema:
+            type: string
+      security:
+      - BearerAuth: []
+      summary: Get ticket by ID
+      tags:
+      - tickets
   /api/v1/todos:
     get:
       description: Retrieve todos with optional pagination (page, size) and filter
@@ -366,6 +605,8 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/api_response.GetTodosResponse'
+      security:
+      - BearerAuth: []
       summary: Get todos with pagination and filters
       tags:
       - todos
@@ -391,6 +632,8 @@ paths:
           description: Invalid JSON
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Create a new todo
       tags:
       - todos
@@ -418,6 +661,8 @@ paths:
           description: Todo not found
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Delete todo by ID
       tags:
       - todos
@@ -444,6 +689,8 @@ paths:
           description: Todo not found
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Get todo by ID
       tags:
       - todos
@@ -478,6 +725,8 @@ paths:
           description: Todo not found
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update an existing todo
       tags:
       - todos
@@ -512,6 +761,8 @@ paths:
           description: Todo not found
           schema:
             type: string
+      security:
+      - BearerAuth: []
       summary: Update an existing todo
       tags:
       - todos

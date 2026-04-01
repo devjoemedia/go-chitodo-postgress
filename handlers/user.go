@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/devjoemedia/chitodopostgress/database"
-	"github.com/devjoemedia/chitodopostgress/models"
-	"github.com/devjoemedia/chitodopostgress/types"
-	api_response "github.com/devjoemedia/chitodopostgress/types/response"
-	"github.com/devjoemedia/chitodopostgress/utils"
+	"github.com/devjoemedia/go-ticketing-api/database"
+	"github.com/devjoemedia/go-ticketing-api/models"
+	"github.com/devjoemedia/go-ticketing-api/types"
+	api_response "github.com/devjoemedia/go-ticketing-api/types/response"
+	"github.com/devjoemedia/go-ticketing-api/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 )
@@ -111,7 +111,9 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Updating fields
-	user.Name = input.Name
+	if input.Name != nil {
+		user.Name = *input.Name
+	}
 
 	if err := database.DB.WithContext(ctx).Save(&user); err.Error != nil {
 		utils.Error(w, http.StatusNotFound, "failed to update user")

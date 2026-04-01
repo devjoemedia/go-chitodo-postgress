@@ -1,6 +1,6 @@
 package database
 
-import "github.com/devjoemedia/chitodopostgress/models"
+import "github.com/devjoemedia/go-ticketing-api/models"
 
 func Migrate() {
 	DB.AutoMigrate(

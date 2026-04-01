@@ -1,6 +1,6 @@
 package api_response
 
-import "github.com/devjoemedia/chitodopostgress/models"
+import "github.com/devjoemedia/go-ticketing-api/models"
 
 type AuthTokens struct {
 	AccessToken  string `json:"access_token"`

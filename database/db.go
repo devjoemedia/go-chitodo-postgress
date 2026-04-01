@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/devjoemedia/chitodopostgress/config"
+	"github.com/devjoemedia/go-ticketing-api/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

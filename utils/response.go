@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/devjoemedia/chitodopostgress/types"
+	"github.com/devjoemedia/go-ticketing-api/types"
 )
 
 func JSON[T any](w http.ResponseWriter, status int, data T) {

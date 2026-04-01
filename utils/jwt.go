@@ -4,7 +4,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/devjoemedia/chitodopostgress/config"
+	"github.com/devjoemedia/go-ticketing-api/config"
 	"github.com/golang-jwt/jwt/v5"
 )
 

@@ -1,4 +1,4 @@
-module github.com/devjoemedia/chitodopostgress
+module github.com/devjoemedia/go-ticketing-api
 
 go 1.25.3
 

@@ -3,15 +3,14 @@ package handlers
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
 
-	"github.com/devjoemedia/chitodopostgress/database"
-	"github.com/devjoemedia/chitodopostgress/models"
-	"github.com/devjoemedia/chitodopostgress/types"
-	api_response "github.com/devjoemedia/chitodopostgress/types/response"
-	"github.com/devjoemedia/chitodopostgress/utils"
+	"github.com/devjoemedia/go-ticketing-api/database"
+	"github.com/devjoemedia/go-ticketing-api/models"
+	"github.com/devjoemedia/go-ticketing-api/types"
+	api_response "github.com/devjoemedia/go-ticketing-api/types/response"
+	"github.com/devjoemedia/go-ticketing-api/utils"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
@@ -23,6 +22,7 @@ import (
 // @Tags         todos
 // @Accept       json
 // @Produce      json
+// @Security 		 BearerAuth
 // @Param        body  body     models.Todo  true  "Todo object"
 // @Success      200   {object} api_response.CreateTodoResponse
 // @Failure      400   {string} string      "Invalid JSON"
@@ -70,6 +70,7 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 // @Description  Retrieve todos with optional pagination (page, size) and filter by is_completed
 // @Tags         todos
 // @Produce      json
+// @Security 		 BearerAuth
 // @Param        page        query    int    false  "Page number (default: 1)"
 // @Param        size        query    int    false  "Page size (default: 10, max: 100)"
 // @Param        is_completed query   bool   false  "Filter by completion status"
@@ -78,49 +79,50 @@ func CreateTodo(w http.ResponseWriter, r *http.Request) {
 func GetTodos(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 
-	// Parse query params with defaults
-	pageStr := r.URL.Query().Get("page")
+	// Pagination
 	page := 1
-	if pageStr != "" {
-		fmt.Sscanf(pageStr, "%d", &page)
+	size := 10
+
+	// Parse query params with defaults
+	if p, err := strconv.Atoi(r.URL.Query().Get("page")); err == nil && p > 0 {
+		page = p
 	}
 
-	sizeStr := r.URL.Query().Get("size")
-	size := 10
-	if sizeStr != "" {
-		fmt.Sscanf(sizeStr, "%d", &size)
+	if s, err := strconv.Atoi(r.URL.Query().Get("size")); err == nil && s > 0 {
+		size = s
 	}
+
 	if size > 100 {
 		size = 100
 	}
-	if size < 1 {
-		size = 10
-	}
 
-	completedStr := r.URL.Query().Get("is_completed")
-	var filterCompleted *bool
-	if completedStr != "" {
-		var completed bool
-		fmt.Sscanf(completedStr, "%t", &completed)
-		filterCompleted = &completed
-	}
+	// Filters
+	is_completed := r.URL.Query().Get("is_completed")
 
+	// Initialize todos slice
 	var todos []models.Todo
-	query := database.DB.WithContext(ctx)
+
+	// Build Base Query
+	query := database.DB.WithContext(ctx).Model(&models.Todo{})
 
 	// Apply filter
-	if filterCompleted != nil {
-		query = query.Where("is_completed = ?", *filterCompleted)
+	if is_completed != "" {
+		if parsedValue, err := strconv.ParseBool(is_completed); err == nil {
+			query.Where("is_completed = ?", parsedValue)
+		}
 	}
 
 	// Pagination
 	total := int64(0)
-	query.Model(&models.Todo{}).Count(&total)
+	if err := query.Count(&total).Error; err != nil {
+		utils.Error(w, http.StatusInternalServerError, "Failed to fetch todos")
+		return
+	}
 
-	offset := (page - 1) * size
-	result := query.Offset(offset).Limit(size).Find(&todos)
-
-	if result.Error != nil {
+	if err := query.
+		Offset((page - 1) * size).
+		Limit(size).
+		Find(&todos).Error; err != nil {
 		utils.Error(w, http.StatusInternalServerError, "Failed to fetch todos")
 		return
 	}
@@ -147,6 +149,7 @@ func GetTodos(w http.ResponseWriter, r *http.Request) {
 // @Description  Fetch a specific todo by its ID
 // @Tags         todos
 // @Produce      json
+// @Security 		 BearerAuth
 // @Param        id   path    int  true  "Todo ID"
 // @Success      200  {object} api_response.GetTodoResponse
 // @Failure      400  {string} string     "Invalid ID"
@@ -187,6 +190,7 @@ func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 // @Tags         todos
 // @Accept       json
 // @Produce      json
+// @Security 		 BearerAuth
 // @Param        id     path    int  true  "Todo ID"
 // @Param        body   body    models.UpdateTodoRequest  true  "Todo object"
 // @Success      200    {object} api_response.UpdateTodoResponse
@@ -250,6 +254,7 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 // @Description  Delete a specific todo by its ID
 // @Tags         todos
 // @Produce      json
+// @Security 		 BearerAuth
 // @Param        id   path    int  true  "Todo ID"
 // @Success      200  {object} api_response.DeleteTodoResponse
 // @Failure      400  {string} string             "Invalid ID"

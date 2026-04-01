@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/devjoemedia/chitodopostgress/models"
+	"github.com/devjoemedia/go-ticketing-api/models"
 	"gorm.io/gorm"
 )
 

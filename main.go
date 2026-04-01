@@ -5,11 +5,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/devjoemedia/chitodopostgress/config"
-	"github.com/devjoemedia/chitodopostgress/database"
-	_ "github.com/devjoemedia/chitodopostgress/docs"
-	"github.com/devjoemedia/chitodopostgress/middleware"
-	"github.com/devjoemedia/chitodopostgress/routes"
+	"github.com/devjoemedia/go-ticketing-api/config"
+	"github.com/devjoemedia/go-ticketing-api/database"
+	_ "github.com/devjoemedia/go-ticketing-api/docs"
+	"github.com/devjoemedia/go-ticketing-api/middleware"
+	"github.com/devjoemedia/go-ticketing-api/routes"
 	"github.com/go-chi/chi/v5"
 	chiMiddleware "github.com/go-chi/chi/v5/middleware"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -37,13 +37,13 @@ func main() {
 		httpSwagger.URL("http://localhost:8000/swagger/doc.json"),
 	))
 	r.Mount("/api/v1/auth", routes.AuthRoute())
-	r.Mount("/api/v1/todos", routes.TodoRoute())
-	r.Mount("/api/v1/tickets", routes.TicketRoute())
 
 	// Protected routes — middleware applied at mount point
 	r.Group(func(r chi.Router) {
 		r.Use(middleware.RequireAuth)
+		r.Mount("/api/v1/todos", routes.TodoRoute())
 		r.Mount("/api/v1/users", routes.UserRoutes())
+		r.Mount("/api/v1/tickets", routes.TicketRoute())
 	})
 
 	port := ":" + config.AppConfig.AppPort

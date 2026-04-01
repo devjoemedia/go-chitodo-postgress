@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/devjoemedia/chitodopostgress/handlers"
+	"github.com/devjoemedia/go-ticketing-api/handlers"
 	"github.com/go-chi/chi/v5"
 )
 

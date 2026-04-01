@@ -1,8 +1,8 @@
 package api_response
 
 import (
-	"github.com/devjoemedia/chitodopostgress/models"
-	"github.com/devjoemedia/chitodopostgress/types"
+	"github.com/devjoemedia/go-ticketing-api/models"
+	"github.com/devjoemedia/go-ticketing-api/types"
 )
 
 type GetTodosResponse struct {

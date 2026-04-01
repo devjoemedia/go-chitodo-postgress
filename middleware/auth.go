@@ -2,10 +2,11 @@ package middleware
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"strings"
 
-	"github.com/devjoemedia/chitodopostgress/utils"
+	"github.com/devjoemedia/go-ticketing-api/utils"
 )
 
 // ContextKey avoids collisions in context values
@@ -57,4 +58,18 @@ func GetUserID(r *http.Request) uint {
 		return id
 	}
 	return 0
+}
+
+func GetUserIDAndEmailFromRequest(r *http.Request) (uint, string, error) {
+	id, ok := r.Context().Value(ContextUserID).(uint)
+	if ok != true {
+		return 0, "", fmt.Errorf("user id not found in context")
+	}
+
+	email, ok := r.Context().Value(ContextUserEmail).(string)
+	if ok != true {
+		return 0, "", fmt.Errorf("email not found in context")
+	}
+
+	return id, email, nil
 }
