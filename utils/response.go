@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/devjoemedia/go-ticketing-api/types"
+	"github.com/devjoemedia/scrumpilot-go-api/types"
 )
 
 func JSON[T any](w http.ResponseWriter, status int, data T) {

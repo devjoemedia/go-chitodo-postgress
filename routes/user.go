@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/devjoemedia/go-ticketing-api/handlers"
+	"github.com/devjoemedia/scrumpilot-go-api/handlers"
 	"github.com/go-chi/chi/v5"
 )
 

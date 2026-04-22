@@ -1,6 +1,6 @@
 package database
 
-import "github.com/devjoemedia/go-ticketing-api/models"
+import "github.com/devjoemedia/scrumpilot-go-api/models"
 
 func Migrate() {
 	DB.AutoMigrate(

@@ -1,8 +1,8 @@
 package api_response
 
 import (
-	"github.com/devjoemedia/go-ticketing-api/models"
-	"github.com/devjoemedia/go-ticketing-api/types"
+	"github.com/devjoemedia/scrumpilot-go-api/models"
+	"github.com/devjoemedia/scrumpilot-go-api/types"
 )
 
 type GetTodosResponse struct {

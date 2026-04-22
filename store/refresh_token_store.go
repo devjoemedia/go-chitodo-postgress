@@ -5,7 +5,7 @@ import (
 	"errors"
 	"time"
 
-	"github.com/devjoemedia/go-ticketing-api/models"
+	"github.com/devjoemedia/scrumpilot-go-api/models"
 	"gorm.io/gorm"
 )
 

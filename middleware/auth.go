@@ -6,7 +6,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/devjoemedia/go-ticketing-api/utils"
+	"github.com/devjoemedia/scrumpilot-go-api/utils"
 )
 
 // ContextKey avoids collisions in context values

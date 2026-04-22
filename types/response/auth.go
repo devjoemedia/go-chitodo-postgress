@@ -1,6 +1,6 @@
 package api_response
 
-import "github.com/devjoemedia/go-ticketing-api/models"
+import "github.com/devjoemedia/scrumpilot-go-api/models"
 
 type AuthTokens struct {
 	AccessToken  string `json:"access_token"`

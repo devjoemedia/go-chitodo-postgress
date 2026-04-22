@@ -1,4 +1,4 @@
-module github.com/devjoemedia/go-ticketing-api
+module github.com/devjoemedia/scrumpilot-go-api
 
 go 1.25.3
 
