@@ -2,11 +2,15 @@ package database
 
 import "github.com/devjoemedia/scrumpilot-go-api/models"
 
-func Migrate() {
-	DB.AutoMigrate(
+func Migrate() error {
+	if err := DB.AutoMigrate(
 		&models.User{},
 		&models.Todo{},
 		&models.Ticket{},
 		&models.RefreshToken{},
-	)
+	); err != nil {
+		return err
+	}
+
+	return nil
 }
